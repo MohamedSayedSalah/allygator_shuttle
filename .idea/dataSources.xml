@@ -13,5 +13,11 @@
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
       <jdbc-url>jdbc:sqlite:identifier.sqlite</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="PostgreSQL - allygator_shuttle@localhost" uuid="36c1be2d-b975-4126-b0ed-e9e0b863ae4f">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://localhost:5432/allygator_shuttle</jdbc-url>
+    </data-source>
   </component>
 </project>

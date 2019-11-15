@@ -10,23 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_15_154336) do
+ActiveRecord::Schema.define(version: 2019_11_15_204743) do
+
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+  enable_extension "uuid-ossp"
 
   create_table "locations", force: :cascade do |t|
     t.float "lng"
     t.float "lat"
     t.datetime "at"
-    t.integer "vehicle_id", null: false
+    t.uuid "vehicle_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["vehicle_id"], name: "index_locations_on_vehicle_id"
   end
 
-  create_table "vehicles", id: false, force: :cascade do |t|
+  create_table "vehicles", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "id"
-    t.string "#<ActiveRecord::ConnectionAdapters::SQLite3::TableDefinition:0x00007fd15f1114c0>"
   end
 
   add_foreign_key "locations", "vehicles"

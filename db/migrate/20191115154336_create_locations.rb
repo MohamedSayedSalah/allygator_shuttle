@@ -4,8 +4,7 @@ class CreateLocations < ActiveRecord::Migration[6.0]
       t.float :lng
       t.float :lat
       t.timestamp :at
-      t.references :vehicle, null: false, foreign_key: true
-
+      t.references :vehicle, type: :uuid, null: false, index: true
       t.timestamps
     end
   end

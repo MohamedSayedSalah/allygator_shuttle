@@ -2,6 +2,7 @@ class LocationsController < ApplicationController
 
   before_action :set_vehicle
   before_action :set_vehicle_location, only: [:show, :destroy]
+  protect_from_forgery with: :null_session
 
   # GET /vehicles/:id/locations
   def index
@@ -16,8 +17,13 @@ class LocationsController < ApplicationController
 
   # POST /vehicles/:id/locations
   def create
-    @vehicle.items.create!(location_params)
-    json_response(@todo, :created)
+    puts params[:location][:lng].as_json
+    # puts @vehicle.as_json
+    @location =  Location.create!(lng: params[:location][:lng],
+    lat: params[:location][:lat],
+    at: params[:location][:at],
+    vehicle_id: @vehicle.id)
+    # json_response(@location, :created)
   end
 
 
@@ -31,7 +37,7 @@ class LocationsController < ApplicationController
   private
 
   def set_vehicle
-    @vehicle = Vehicle.find(params[:vehicle_id])
+    @vehicle = Vehicle.find(params[:id])
   end
 
   def set_vehicle_location

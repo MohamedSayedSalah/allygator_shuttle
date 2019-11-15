@@ -10,6 +10,13 @@
   </head>
 
   <body>
+  <nav class="navbar navbar-inverse">
+    <%= link_to 'Home',root_path, class: 'navbar-brand' %>
+    <%= link_to 'New Car',create_vehicle_path, class: 'navbar-brand' %>
+
+  </nav>
+
     <%= yield %>
+
   </body>
 </html>

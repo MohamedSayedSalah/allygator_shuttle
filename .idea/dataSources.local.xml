@@ -15,5 +15,18 @@
       <auth-required>false</auth-required>
       <schema-mapping />
     </data-source>
+    <data-source name="PostgreSQL - allygator_shuttle@localhost" uuid="36c1be2d-b975-4126-b0ed-e9e0b863ae4f">
+      <database-info product="PostgreSQL" version="11.4" jdbc-version="4.2" driver-name="PostgreSQL JDBC Driver" driver-version="42.2.5" dbms="POSTGRES" exact-version="11.4" exact-driver-version="42.2">
+        <identifier-quote-string>&quot;</identifier-quote-string>
+      </database-info>
+      <case-sensitivity plain-identifiers="lower" quoted-identifiers="exact" />
+      <secret-storage>master_key</secret-storage>
+      <user-name>admin</user-name>
+      <schema-mapping>
+        <introspection-scope>
+          <node kind="database" qname="allygator_shuttle" />
+        </introspection-scope>
+      </schema-mapping>
+    </data-source>
   </component>
 </project>

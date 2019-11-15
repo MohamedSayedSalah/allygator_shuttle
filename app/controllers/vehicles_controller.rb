@@ -1,20 +1,25 @@
 class VehiclesController < ApplicationController
   before_action :set_vehicle, only: [:show, :destroy]
-  
+  protect_from_forgery with: :null_session
   include Response
   include ExceptionHandler
   # GET /vehicles
   def index
-    @vehicle = Vehicle.all
-    json_response(@vehicle)
+    @vehicles = Vehicle.all
+    # render :json => @vehicles
   end
 
   # POST /vehicles
   def create
-    puts "##"
-    puts params[:vehicle]
-    # @vehicle = Vehicle.create!(params)
+    puts "%%"
+    puts params
+    @vehicle = Vehicle.create!(id:params[:id])
     # json_response(@vehicle, :created)
+  end
+
+
+  def signup
+
   end
 
   # GET /vehicles/:id

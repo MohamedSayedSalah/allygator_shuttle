@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  lng: 
+  lat: 
+  at: 2019-11-15 17:43:36
+  vehicle: one
+
+two:
+  lng: 
+  lat: 
+  at: 2019-11-15 17:43:36
+  vehicle: two

@@ -10,11 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_15_204743) do
+ActiveRecord::Schema.define(version: 2019_11_16_222940) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "uuid-ossp"
+
+  create_table "last_locations", force: :cascade do |t|
+    t.float "lng"
+    t.float "lat"
+    t.datetime "at"
+    t.uuid "vehicle_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["vehicle_id"], name: "index_last_locations_on_vehicle_id"
+  end
 
   create_table "locations", force: :cascade do |t|
     t.float "lng"
@@ -29,7 +39,9 @@ ActiveRecord::Schema.define(version: 2019_11_15_204743) do
   create_table "vehicles", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["id"], name: "index_vehicles_on_id"
   end
 
+  add_foreign_key "last_locations", "vehicles"
   add_foreign_key "locations", "vehicles"
 end

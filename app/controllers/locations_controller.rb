@@ -17,12 +17,14 @@ class LocationsController < ApplicationController
 
   # POST /vehicles/:id/locations
   def create
-    puts params[:location][:lng].as_json
-    # puts @vehicle.as_json
     @location =  Location.create!(lng: params[:location][:lng],
     lat: params[:location][:lat],
     at: params[:location][:at],
-    vehicle_id: @vehicle.id)
+    vehicle: @vehicle)
+    LastLocation.where(vehicle:@vehicle).first_or_create(:lng => @location.lng , :lat => @location.lat , :at => @location.at , :vehicle => @vehicle)
+        .update(:lng => @location.lng , :lat => @location.lat , :at => @location.at )
+
+
     # json_response(@location, :created)
   end
 
@@ -32,7 +34,6 @@ class LocationsController < ApplicationController
     @location.destroy
     head :no_content
   end
-
 
   private
 

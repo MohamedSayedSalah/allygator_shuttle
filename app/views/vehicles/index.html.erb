@@ -1,1 +1,75 @@
-<%= @vehicles%>
+<div style='width: 800px;'>
+  <div id="map" style='width: 800px; height: 400px;'></div>
+</div>
+
+<script type="text/javascript">
+
+    const vehiclesPath = {};
+    let trackedVehicles = [];
+    const carRoute = (idx) => {
+        let carPathCoordinates = [
+            // {lat: 52.5308, lng: 13.40916}
+        ];
+        return () => {
+            let url = '/vehicles/' + trackedVehicles[idx];
+            const updateLocation = () => {
+                drawUpdatedLocation();
+                $.get(url, (data, status) => {
+                    console.log(carPathCoordinates, idx);
+                    carPathCoordinates.push({lat: data.lat, lng: data.lng});
+
+                })
+            };
+            const drawUpdatedLocation = () => {
+                let carPath = new google.maps.Polyline({
+                    path: carPathCoordinates,
+                    geodesic: true,
+                    strokeColor: '#FF0000',
+                    strokeOpacity: 1.0,
+                    strokeWeight: 2
+                });
+                carPath.setMap(map);
+            };
+            updateLocation();
+        }
+    };
+    let map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 11,
+        center: {lat: 52.5308, lng: 13.47745},
+        mapTypeId: 'terrain'
+    });
+
+    function initMap() {
+        let carPath = new google.maps.Polyline({
+            path: [{lat: 52.5308, lng: 13.47745}],
+            geodesic: true,
+            strokeColor: '#FF0000',
+            strokeOpacity: 1.0,
+            strokeWeight: 2
+        });
+
+        carPath.setMap(map);
+    }
+
+    $(document).on('turbolinks:load', function () {
+        initMap();
+        trackedVehicles =
+        <%= raw Vehicle.all.map(&:id) %>
+
+        trackedVehicles.forEach((vehicle, idx) => {
+            const progress = carRoute(idx);
+            vehiclesPath[idx] = progress
+        });
+            window.setInterval(() => {
+                trackedVehicles.forEach((vehicle, idx) => {
+                    // get all cars latest location by on request
+                    vehiclesPath[idx]();
+                });
+            }, 3000);
+
+
+
+    });
+
+
+</script>

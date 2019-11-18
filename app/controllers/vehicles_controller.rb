@@ -12,20 +12,15 @@ class VehiclesController < ApplicationController
 
   # POST /vehicles
   def create
-    @vehicle = Vehicle.create!(id:params[:id])
+    @vehicle = Vehicle.find_or_create_by!(id:params[:id])
     # json_response(@vehicle, :created)
   end
 
   def last_location
+    @vehicles_last_location = {}
+    LastLocation.all.map{|location| @vehicles_last_location[location.vehicle_id] =  {lat: location.lat , lng: location.lng} }
+   render :json => @vehicles_last_location
 
-  end
-
-
-  # GET /vehicles/:id
-  def show
-    @vehicle =  Vehicle.find_by_id(params[:id]) ;
-    @location= @vehicle.locations.last
-    render :json => @location
   end
 
   # DELETE /vehicles/:id

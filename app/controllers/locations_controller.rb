@@ -9,10 +9,6 @@ class LocationsController < ApplicationController
     json_response(@vehicle.locations)
   end
 
-  # GET /vehicles/:id/locations/:id
-  def show
-    json_response(@item)
-  end
 
 
   # POST /vehicles/:id/locations

@@ -1,42 +1,68 @@
-<div style='width: 800px;'>
-  <div id="map" style='width: 800px; height: 400px;'></div>
+<div id="container">
+  <div id="map"></div>
 </div>
-
 <script type="text/javascript">
-
-    const vehiclesPath = {};
+    let resetFlag = false;
+    let vehiclesPath = {};
     let trackedVehicles = [];
-    const carRoute = (idx) => {
-        let carPathCoordinates = [
-            // {lat: 52.5308, lng: 13.40916}
-        ];
-        return () => {
-            let url = '/vehicles/' + trackedVehicles[idx];
-            const updateLocation = () => {
-                drawUpdatedLocation();
-                $.get(url, (data, status) => {
-                    console.log(carPathCoordinates, idx);
-                    carPathCoordinates.push({lat: data.lat, lng: data.lng});
+    let url = '/last_locations';
 
-                })
-            };
+
+    const pause = () => {
+        $.ajax({
+            url: "/last_locations",
+            method: 'delete',
+            success: () => {
+                resetFlag = true;
+            }
+        });
+
+    };
+
+
+    const carRoute = () => {
+        let carPathCoordinates = [];
+        const car = "M17.402,0H5.643C2.526,0,0,3.467,0,6.584v34.804c0,3.116,2.526,5.644,5.643,5.644h11.759c3.116,0,5.644-2.527,5.644-5.644 V6.584C23.044,3.467,20.518,0,17.402,0z M22.057,14.188v11.665l-2.729,0.351v-4.806L22.057,14.188z M20.625,10.773 c-1.016,3.9-2.219,8.51-2.219,8.51H4.638l-2.222-8.51C2.417,10.773,11.3,7.755,20.625,10.773z M3.748,21.713v4.492l-2.73-0.349 V14.502L3.748,21.713z M1.018,37.938V27.579l2.73,0.343v8.196L1.018,37.938z M2.575,40.882l2.218-3.336h13.771l2.219,3.336H2.575z M19.328,35.805v-7.872l2.729-0.355v10.048L19.328,35.805z";
+        const icon = {
+            path: car,
+            scale: .5,
+            strokeColor: 'white',
+            strokeWeight: .10,
+            fillOpacity: 1,
+            fillColor: '#404040',
+            offset: '5%',
+            anchor: new google.maps.Point(10, 25)
+        };
+        let marker = new google.maps.Marker({map: map, icon: icon});
+
+
+        return (data) => {
+            carPathCoordinates.push(data);
             const drawUpdatedLocation = () => {
+                console.log(carPathCoordinates);
                 let carPath = new google.maps.Polyline({
                     path: carPathCoordinates,
                     geodesic: true,
-                    strokeColor: '#FF0000',
+                    strokeColor: '#0000FF',
                     strokeOpacity: 1.0,
-                    strokeWeight: 2
+                    strokeWeight: 3
                 });
                 carPath.setMap(map);
+                marker.setPosition(new google.maps.LatLng( data.lat, data.lng ));
+                let lastPosition = carPathCoordinates.length > 1 ? new google.maps.LatLng( carPathCoordinates[carPathCoordinates.length  - 2 ].lat, carPathCoordinates[carPathCoordinates.length  - 2 ].lng ): marker.getPosition();
+                const heading = google.maps.geometry.spherical.computeHeading(lastPosition ,marker.getPosition());
+                icon.rotation = heading;
+                marker.setIcon(icon);
+                // map.panTo( new google.maps.LatLng(  data.lat, data.lng ));
+
             };
-            updateLocation();
+            drawUpdatedLocation();
         }
     };
     let map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 11,
+        zoom: 13,
         center: {lat: 52.5308, lng: 13.47745},
-        mapTypeId: 'terrain'
+        mapTypeId: google.maps.MapTypeId.ROADMAP
     });
 
     function initMap() {
@@ -53,23 +79,53 @@
 
     $(document).on('turbolinks:load', function () {
         initMap();
-        trackedVehicles =
-        <%= raw Vehicle.all.map(&:id) %>
-
-        trackedVehicles.forEach((vehicle, idx) => {
-            const progress = carRoute(idx);
-            vehiclesPath[idx] = progress
-        });
-            window.setInterval(() => {
-                trackedVehicles.forEach((vehicle, idx) => {
-                    // get all cars latest location by on request
-                    vehiclesPath[idx]();
+        trackedVehicles = <%= raw Vehicle.all.map(&:id) %>
+            trackedVehicles.forEach((vehicle, idx) => {
+                const progress = carRoute();
+                vehiclesPath[vehicle] = progress
+            });
+        const interval = window.setInterval(() => {
+            $.get(url, (data, status) => {
+                trackedVehicles.forEach((vehicle) => {
+                    vehiclesPath[vehicle](data[vehicle]);
                 });
-            }, 3000);
+            });
 
-
-
+            if (resetFlag) {
+                clearInterval(interval);
+            }
+        }, 3000);
     });
-
-
 </script>
+<style>
+  html {
+    height: 100%
+  }
+
+  body {
+    height: 100%;
+    margin: 0px;
+    padding: 0px
+  }
+
+  #container {
+    width: 100%;
+    height: 100%
+  }
+
+  #nav {
+    z-index: 100;
+    position: absolute;
+    margin: 10px 0px 0px 200px;
+    background-color: #fff;
+    border: 1px #000 Solid;
+    padding: 5px;
+  }
+
+  #map {
+    width: 100%;
+    height: 100%
+  }
+
+
+</style>
